@@ -5,26 +5,10 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <LinearLayout
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragment_container_view"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_gravity="center">
-
-        <Button
-            android:id="@+id/button_fail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Login - unsuccessful" />
-
-        <Button
-            android:id="@+id/button_success"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Login - successful" />
-
-    </LinearLayout>
-
-
+        android:layout_gravity="center"/>
 
 </FrameLayout>

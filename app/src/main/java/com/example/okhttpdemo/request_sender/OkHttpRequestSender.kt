@@ -1,15 +1,21 @@
-package com.example.okhttpdemo
+package com.example.okhttpdemo.request_sender
 
+import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import okhttp3.*
 import java.io.IOException
 
 class OkHttpRequestSender(val toaster: Toaster) : RequestSender<Response> {
+    companion object {
+        private const val TAG = "OkHttpRequestSender"
+    }
+
     private val gson = Gson()
     private val okHttpClient: OkHttpClient = OkHttpClient()
 
     override fun sendLoginRequest(email: String?, password: String?) {
+        Log.i(TAG, "called sendLoginRequest from $TAG")
         val requestBodyBuilder = FormBody.Builder()
         if (email != null) {
             requestBodyBuilder.add("email", email)

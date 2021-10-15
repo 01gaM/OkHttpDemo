@@ -1,5 +1,6 @@
-package com.example.okhttpdemo
+package com.example.okhttpdemo.request_sender
 
+import android.util.Log
 import com.google.gson.JsonObject
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -8,6 +9,10 @@ import retrofit2.Callback
 import retrofit2.converter.gson.GsonConverterFactory
 
 class RetrofitRequestSender(val toaster: Toaster) : RequestSender<Response<JsonObject>> {
+    companion object {
+        private const val TAG = "RetrofitRequestSender"
+    }
+
     private val retrofit: Retrofit = Retrofit
         .Builder()
         .baseUrl(RequestSender.BASE_URL)
@@ -17,6 +22,7 @@ class RetrofitRequestSender(val toaster: Toaster) : RequestSender<Response<JsonO
     private val service = retrofit.create(ReqResService::class.java)
 
     override fun sendLoginRequest(email: String?, password: String?) {
+        Log.i(TAG, "called sendLoginRequest from $TAG")
         val call: Call<JsonObject> = service.getToken(email, password)
         call.enqueue(object : Callback<JsonObject> {
             override fun onResponse(
