@@ -5,6 +5,7 @@ import com.example.okhttpdemo.data.ErrorResponse
 import com.example.okhttpdemo.data.LoginResponse
 import com.google.gson.Gson
 import okhttp3.*
+import okhttp3.logging.HttpLoggingInterceptor
 import java.io.IOException
 
 class OkHttpRequestSender(val toaster: Toaster) : RequestSender<Response> {
@@ -13,7 +14,9 @@ class OkHttpRequestSender(val toaster: Toaster) : RequestSender<Response> {
     }
 
     private val gson = Gson()
-    private val okHttpClient: OkHttpClient = OkHttpClient()
+    private val okHttpClient: OkHttpClient = OkHttpClient.Builder()
+        .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+        .build()
 
     override fun sendLoginRequest(email: String?, password: String?) {
         Log.i(TAG, "called sendLoginRequest from $TAG")
@@ -44,7 +47,8 @@ class OkHttpRequestSender(val toaster: Toaster) : RequestSender<Response> {
                         val token = getTokenFromResponse(it)
                         toaster.showTokenInToast(token)
                     } else {
-                        val errorResponse = gson.fromJson(it.body?.string(), ErrorResponse::class.java)
+                        val errorResponse =
+                            gson.fromJson(it.body?.string(), ErrorResponse::class.java)
                         toaster.showErrorResponseToast(it.code, errorResponse)
                     }
                 }

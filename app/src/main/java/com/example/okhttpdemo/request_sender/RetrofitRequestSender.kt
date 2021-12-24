@@ -4,6 +4,8 @@ import android.util.Log
 import com.example.okhttpdemo.data.ErrorResponse
 import com.example.okhttpdemo.data.LoginResponse
 import com.google.gson.Gson
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.Call
@@ -19,6 +21,14 @@ class RetrofitRequestSender(val toaster: Toaster) : RequestSender<Response<Login
         .Builder()
         .baseUrl(RequestSender.BASE_URL)
         .addConverterFactory(GsonConverterFactory.create())
+        .client(
+            OkHttpClient.Builder()
+                .addInterceptor(
+                    HttpLoggingInterceptor()
+                        .setLevel(HttpLoggingInterceptor.Level.BODY)
+                )
+                .build()
+        )
         .build()
 
     private val service = retrofit.create(ReqResService::class.java)
@@ -37,7 +47,8 @@ class RetrofitRequestSender(val toaster: Toaster) : RequestSender<Response<Login
                     toaster.showTokenInToast(token)
                 } else {
                     val gson = Gson()
-                    val errorResponse = gson.fromJson(response.errorBody()?.string(), ErrorResponse::class.java)
+                    val errorResponse =
+                        gson.fromJson(response.errorBody()?.string(), ErrorResponse::class.java)
                     toaster.showErrorResponseToast(response.code(), errorResponse)
                 }
             }
