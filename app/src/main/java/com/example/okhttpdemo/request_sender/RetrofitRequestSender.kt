@@ -1,14 +1,16 @@
 package com.example.okhttpdemo.request_sender
 
 import android.util.Log
-import com.google.gson.JsonObject
+import com.example.okhttpdemo.data.ErrorResponse
+import com.example.okhttpdemo.data.LoginResponse
+import com.google.gson.Gson
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.converter.gson.GsonConverterFactory
 
-class RetrofitRequestSender(val toaster: Toaster) : RequestSender<Response<JsonObject>> {
+class RetrofitRequestSender(val toaster: Toaster) : RequestSender<Response<LoginResponse>> {
     companion object {
         private const val TAG = "RetrofitRequestSender"
     }
@@ -23,28 +25,32 @@ class RetrofitRequestSender(val toaster: Toaster) : RequestSender<Response<JsonO
 
     override fun sendLoginRequest(email: String?, password: String?) {
         Log.i(TAG, "called sendLoginRequest from $TAG")
-        val call: Call<JsonObject> = service.getToken(email, password)
-        call.enqueue(object : Callback<JsonObject> {
+        val call: Call<LoginResponse> = service.getToken(email, password)
+        call.enqueue(object : Callback<LoginResponse> {
             override fun onResponse(
-                call: Call<JsonObject>,
-                response: Response<JsonObject>
+                call: Call<LoginResponse>,
+                response: Response<LoginResponse>
             ) {
+                Log.i(TAG, "called onResponse from $TAG")
                 if (response.isSuccessful) {
                     val token = getTokenFromResponse(response)
                     toaster.showTokenInToast(token)
                 } else {
-                    toaster.showErrorResponseToast(response.code())
+                    val gson = Gson()
+                    val errorResponse = gson.fromJson(response.errorBody()?.string(), ErrorResponse::class.java)
+                    toaster.showErrorResponseToast(response.code(), errorResponse)
                 }
             }
 
-            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+            override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                Log.i(TAG, "called onFailure from $TAG")
                 toaster.showOnFailureToast()
             }
         })
     }
 
-    override fun getTokenFromResponse(response: Response<JsonObject>): String {
+    override fun getTokenFromResponse(response: Response<LoginResponse>): String {
         val responseBody = response.body()
-        return responseBody?.get("token").toString()
+        return responseBody?.token ?: ""
     }
 }

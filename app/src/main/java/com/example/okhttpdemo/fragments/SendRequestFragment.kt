@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.okhttpdemo.MainActivity
 import com.example.okhttpdemo.R
+import com.example.okhttpdemo.data.ErrorResponse
 import com.example.okhttpdemo.request_sender.Toaster
 import com.example.okhttpdemo.request_sender.OkHttpRequestSender
 import com.example.okhttpdemo.request_sender.RetrofitRequestSender
@@ -66,8 +67,11 @@ class SendRequestFragment : Fragment(R.layout.fragment_request_menu), Toaster {
         showToast(message)
     }
 
-    override fun showErrorResponseToast(responseCode: Int) {
-        showToast("Bad request!")
-        Log.e(MainActivity.TAG, "Error! Response code: $responseCode")
+    override fun showErrorResponseToast(responseCode: Int, errorResponse: ErrorResponse) {
+        showToast("Error!\n$responseCode - ${errorResponse.message}")
+        Log.e(
+            MainActivity.TAG,
+            "Error!\nResponse code: $responseCode\nError message: ${errorResponse.message}"
+        )
     }
 }

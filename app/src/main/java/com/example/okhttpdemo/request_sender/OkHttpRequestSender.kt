@@ -1,8 +1,9 @@
 package com.example.okhttpdemo.request_sender
 
 import android.util.Log
+import com.example.okhttpdemo.data.ErrorResponse
+import com.example.okhttpdemo.data.LoginResponse
 import com.google.gson.Gson
-import com.google.gson.JsonObject
 import okhttp3.*
 import java.io.IOException
 
@@ -38,11 +39,14 @@ class OkHttpRequestSender(val toaster: Toaster) : RequestSender<Response> {
             }
 
             override fun onResponse(call: Call, response: Response) {
-                if (response.isSuccessful) {
-                    val token = getTokenFromResponse(response)
-                    toaster.showTokenInToast(token)
-                } else {
-                    toaster.showErrorResponseToast(response.code)
+                response.use {
+                    if (it.isSuccessful) {
+                        val token = getTokenFromResponse(it)
+                        toaster.showTokenInToast(token)
+                    } else {
+                        val errorResponse = gson.fromJson(it.body?.string(), ErrorResponse::class.java)
+                        toaster.showErrorResponseToast(it.code, errorResponse)
+                    }
                 }
             }
         })
@@ -50,6 +54,6 @@ class OkHttpRequestSender(val toaster: Toaster) : RequestSender<Response> {
 
     override fun getTokenFromResponse(response: Response): String {
         val jsonString = response.body?.string()
-        return gson.fromJson(jsonString, JsonObject::class.java).get("token").asString
+        return gson.fromJson(jsonString, LoginResponse::class.java).token
     }
 }

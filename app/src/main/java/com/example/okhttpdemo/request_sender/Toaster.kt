@@ -1,5 +1,7 @@
 package com.example.okhttpdemo.request_sender
 
+import com.example.okhttpdemo.data.ErrorResponse
+
 
 interface Toaster {
     fun showToast(message: String)
@@ -8,5 +10,5 @@ interface Toaster {
 
     fun showOnFailureToast()
 
-    fun showErrorResponseToast(responseCode: Int)
+    fun showErrorResponseToast(responseCode: Int, errorResponse: ErrorResponse)
 }

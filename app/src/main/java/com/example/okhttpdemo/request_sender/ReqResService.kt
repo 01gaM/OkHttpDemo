@@ -1,6 +1,6 @@
 package com.example.okhttpdemo.request_sender
 
-import com.google.gson.JsonObject
+import com.example.okhttpdemo.data.LoginResponse
 import retrofit2.Call
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
@@ -12,5 +12,5 @@ interface ReqResService {
     fun getToken(
         @Field("email") email: String?,
         @Field("password") password: String?
-    ): Call<JsonObject>
+    ): Call<LoginResponse>
 }
